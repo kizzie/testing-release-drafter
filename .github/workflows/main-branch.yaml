@@ -1,16 +1,15 @@
 name: Release Drafter
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 permissions:
   contents: read
 
+# this then updates the release notes on a merge to main, so you don't have to hit generate
 jobs:
-
-  # This will run the labeller and create a new release if one is needed
   update_release_draft:
     permissions:
       # write permission is required to create a github release
