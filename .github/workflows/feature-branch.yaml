@@ -2,7 +2,6 @@ name: Release Drafter
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
     branches:
       - main
 
@@ -21,5 +20,8 @@ jobs:
     steps:
       # Drafts your next Release notes as Pull Requests are merged into "main"
       - uses: release-drafter/release-drafter@v6
+        with:
+          commitish: main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
