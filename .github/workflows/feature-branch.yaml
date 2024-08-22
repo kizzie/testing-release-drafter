@@ -20,6 +20,8 @@ jobs:
       # otherwise, read permission is required at least
       pull-requests: write
     runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.set_tag_name.outputs.tag_name }}
     steps:
       # Drafts your next Release notes as Pull Requests are merged into "main"
       - id: release-drafter
@@ -47,6 +49,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4      
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
       - name: get version
         id: get_version
         env:
@@ -56,7 +60,6 @@ jobs:
           RESOLVED_VERSION=$(echo $TAG_NAME | sed "s|$TAG_PREFIX||")
           echo "version=$RESOLVED_VERSION" >> $GITHUB_OUTPUT
       - name: setup git config
-        id: setup_git_config
         run: |
           # setup the username and email
           git config --global --unset-all url.ssh://git@github.com/.insteadOf https://github.com/ || true
