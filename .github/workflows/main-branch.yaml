@@ -23,6 +23,7 @@ jobs:
       - uses: release-drafter/release-drafter@v6
         with:
           commitish: main
+          config-name: release-testing.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           

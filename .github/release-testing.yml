@@ -1,0 +1,4 @@
+_extends: testing-release-drafter:.github/release-drafter.yml
+name-template: 'testing-release-drafter v$RESOLVED_VERSION'
+tag-template: 'testing-release-drafter/v$RESOLVED_VERSION'
+tag-prefix: testing-release-drafter/v
