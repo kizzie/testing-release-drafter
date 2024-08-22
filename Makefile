@@ -1,5 +1,5 @@
 VERSION=$(shell poetry version -s)
-TAG_PREFIX=testing-release-drafter/
+TAG_PREFIX=testing-release-drafter/v
 
 version:
 	@echo ${TAG_PREFIX}${VERSION}

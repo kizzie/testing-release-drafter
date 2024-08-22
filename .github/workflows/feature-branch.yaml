@@ -60,7 +60,6 @@ jobs:
           RESOLVED_VERSION=$(echo $TAG_NAME | sed "s|$TAG_PREFIX||")
           echo "version=$RESOLVED_VERSION" >> $GITHUB_OUTPUT
       - name: setup git config
-        id: setup_git_config
         run: |
           # setup the username and email
           git config --global --unset-all url.ssh://git@github.com/.insteadOf https://github.com/ || true
