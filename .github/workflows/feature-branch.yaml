@@ -22,9 +22,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Drafts your next Release notes as Pull Requests are merged into "main"
+      - id: release-drafter
       - uses: release-drafter/release-drafter@v6
         with:
           commitish: main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+      # add this tag to the github output so we can use it later
+      - id: set_tag_name
+        run: echo "tag_name=${{ steps.release-drafter.outputs.tag_name }}" >> $GITHUB_OUTPUT
+
+
+  # So this will need to get the current version from the drafted release, and then set the 
+  # pyproject toml to be that
+  update_pyproject_toml_to_release_version:
+    environment: development
+    needs: [ update_release_draft ]
+    permissions:
+      contents: write
+      repository-projects: write
+      id-token: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4      
+      - name: get version
+        id: get_version
+        env:
+          TAG_NAME: ${{ needs.update_release_draft.outputs.tag_name }}
+        run: |
+          TAG_PREFIX=$(make tag_prefix)
+          RESOLVED_VERSION=$(echo $TAG_NAME | sed "s|$TAG_PREFIX||")
+          echo "version=$RESOLVED_VERSION" >> $GITHUB_OUTPUT
+      - name: setup git config
+        id: setup_git_config
+        run: |
+          # setup the username and email
+          git config --global --unset-all url.ssh://git@github.com/.insteadOf https://github.com/ || true
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: set version in pyproject.toml
+        env:
+          TAG_NAME: ${{ needs.update_release_draft.outputs.tag_name }}
+        run: |
+          sed -i 's/\(^version = \).*/\1"'${{ steps.get_version.outputs.version }}'"/' pyproject.toml
+          git add pyproject.toml
+          git commit -m "chore: release $TAG_NAME" && git push || echo "Version already up to date"
