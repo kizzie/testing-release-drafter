@@ -25,12 +25,14 @@ jobs:
   # and push to ecr
   build-push-staging: 
     environment: staging
+    runs-on: ubuntu-latest
     needs: [ create-tag ]
     steps:
       - run: echo "I am building and pushing staging. yay. ${{ needs.create-tag.outputs.STAGING_DOCKER_VERSION }}"
 
   build-push-production: 
     environment: production
+    runs-on: ubuntu-latest
     needs: [ create-tag ]
     steps:
       - run: echo "I am building and pushing production. yay ${{ needs.create-tag.outputs.PRODUCTION_DOCKER_VERSION }}"
