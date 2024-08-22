@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "testing-release-drafter"
-version = "0.2.1"
+version = "0.2.2"
 description = ""
 authors = ["Kat Samperi <katrina.samperi@iceye.fi>"]
 readme = "README.md"
