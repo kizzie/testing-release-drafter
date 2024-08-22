@@ -1,0 +1,36 @@
+name: release-staging-and-production
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # create the staging tags
+  create-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      STAGING_DOCKER_VERSION: ${{ steps.get-tag.outputs.STAGING_DOCKER_VERSION }}
+      PRODUCTION_DOCKER_VERSION: ${{ steps.get-tag.outputs.PRODUCTION_DOCKER_VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: get tag
+        id: get-tag
+        run: |
+          echo STAGING_DOCKER_VERSION=$(ENV=staging make docker_version) >> $GITHUB_OUTPUT
+          echo PRODUCTION_DOCKER_VERSION=$(ENV=production make docker_version) >> $GITHUB_OUTPUT
+
+  # and push to ecr
+  build-push-staging: 
+    environment: staging
+    needs: [ create-tag ]
+    steps:
+      - run: echo "I am building and pushing staging. yay. ${{ needs.create-tag.outputs.STAGING_DOCKER_VERSION }}"
+
+  build-push-production: 
+    environment: production
+    needs: [ create-tag ]
+    steps:
+      - run: echo "I am building and pushing production. yay ${{ needs.create-tag.outputs.PRODUCTION_DOCKER_VERSION }}"
